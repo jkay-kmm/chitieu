@@ -1,12 +1,14 @@
 import 'package:expense_repository/expense_repository.dart';
 
 class Expense {
+  // String id;
   String expenseId;
   Category category;
   DateTime date;
   int amount;
 
   Expense({
+    // required this.id,
     required this.expenseId,
     required this.category,
     required this.date,
@@ -31,6 +33,7 @@ class Expense {
 
   static Expense fromEntity(ExpenseEntity entity) {
     return Expense(
+
       expenseId: entity.expenseId,
       category: entity.category,
       date: entity.date,

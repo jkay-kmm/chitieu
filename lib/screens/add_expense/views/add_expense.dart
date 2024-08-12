@@ -46,9 +46,9 @@ class _AddExpenseState extends State<AddExpense> {
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.background,
+          backgroundColor: Colors.white,
           appBar: AppBar(
-            backgroundColor: Theme.of(context).colorScheme.background,
+            backgroundColor: Colors.white,
           ),
           body: BlocBuilder<GetCategoriesBloc, GetCategoriesState>(
             builder: (context, state) {
@@ -78,7 +78,9 @@ class _AddExpenseState extends State<AddExpense> {
                               size: 16,
                               color: Colors.grey,
                             ),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(30), borderSide: BorderSide.none),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30),
+                                borderSide: BorderSide.none),
                           ),
                         ),
                       ),
@@ -117,7 +119,9 @@ class _AddExpenseState extends State<AddExpense> {
                             )
                           ),
                           hintText: 'Category',
-                          border: const OutlineInputBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(12)), borderSide: BorderSide.none),
+                          border: const OutlineInputBorder(
+                              borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+                              borderSide: BorderSide.none),
                         ),
                       ),
                       Container(

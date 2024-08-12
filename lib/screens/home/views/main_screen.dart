@@ -3,10 +3,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+// Tệp này được tạo tự động khi bạn chạy lệnh flutterfire configure
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class MainScreen extends StatelessWidget {
   final List<Expense> expenses;
 
-  const MainScreen(this.expenses, {super.key});
+
+   MainScreen(this.expenses, {super.key});
 
   double _calculateTotalAmount() {
     double total = 0.0;
@@ -15,6 +19,8 @@ class MainScreen extends StatelessWidget {
     }
     return total;
   }
+
+  final TextEditingController amountController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -250,17 +256,148 @@ class MainScreen extends StatelessWidget {
                         ),
                         onDismissed: (direction) {
                           if (direction == DismissDirection.startToEnd) {
-                            // Thực hiện hành động xóa
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('${expenses[i].category.name} dismissed')),
+                            // Hiển thị dialog khi vuốt sang phải
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Xóa mục'),
+                                  content: Text('Bạn có chắc muốn xóa ${expenses[i].category.name}?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop(); // Đóng dialog khi nhấn "Hủy"
+                                      },
+                                      child: const Text('Hủy'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () async {
+                                        // Thực hiện hành động xóa từ Firebase
+                                        await FirebaseFirestore.instance
+                                            .collection('expenses')
+                                            .doc(expenses[i].expenseId) // Giả sử mỗi expense có một ID duy nhất
+                                            .delete()
+                                            .then((_) {
+                                          // Hiển thị thông báo thành công
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text('${expenses[i].category.name} đã bị xóa')),
+                                          );
+                                        }).catchError((error) {
+                                          // Hiển thị thông báo lỗi
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text('Xóa thất bại: $error')),
+                                          );
+                                        });
+
+                                        Navigator.of(context).pop(); // Đóng dialog sau khi thực hiện xóa
+                                      },
+                                      child: const Text('Xóa'),
+                                    ),
+                                  ],
+                                );
+                              },
                             );
+
                           } else {
-                            // Thực hiện hành động chỉnh sửa
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('${expenses[i].category.name} editing')),
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Chỉnh sửa mục'),
+                                  content: Text('Bạn muốn chỉnh sửa ${expenses[i].category.name}?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        // Navigator.of(context).pop(); // Đóng dialog khi nhấn "Hủy"
+                                      },
+                                      child: const Text('Hủy'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop(); // Đóng dialog sau khi nhấn "Chỉnh sửa"
+
+                                        // Mở Bottom Sheet để chỉnh sửa
+                                        showModalBottomSheet(
+                                          context: context,
+                                          isScrollControlled: true,
+                                          builder: (BuildContext context) {
+                                            return Padding(
+                                              padding: EdgeInsets.only(
+                                                bottom: MediaQuery.of(context).viewInsets.bottom,
+                                              ),
+                                              child: Container(
+                                                padding: const EdgeInsets.all(16.0),
+                                                child: Column(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      'Chỉnh sửa ${expenses[i].category.name}',
+                                                      style: const TextStyle(
+                                                        fontSize: 18,
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 16),
+                                                    TextField(
+                                                      controller: TextEditingController(text: expenses[i].amount.toString()),
+                                                      decoration: const InputDecoration(
+                                                        labelText: 'Số tiền',
+                                                        border: OutlineInputBorder(),
+                                                      ),
+                                                      keyboardType: TextInputType.number,
+                                                      onChanged: (value) {
+                                                        // Cập nhật số tiền khi người dùng nhập
+                                                        // Có thể lưu giá trị vào biến để sử dụng khi lưu thay đổi
+                                                      },
+
+                                                    ),
+
+                                                    const SizedBox(height: 16),
+                                                    ElevatedButton(
+                                                      onPressed: () async {
+                                                        // Cập nhật dữ liệu lên Firebase
+                                                        try {
+                                                          await FirebaseFirestore.instance
+                                                              .collection('expenses')
+                                                              .doc(expenses[i].expenseId)
+                                                              .update({
+                                                            'amount': int.parse(amountController.text), // Sử dụng giá trị mới
+                                                            // Thêm các trường khác nếu cần
+                                                          });
+
+                                                          ScaffoldMessenger.of(context).showSnackBar(
+                                                            SnackBar(content: Text('${expenses[i].category.name} đã được cập nhật')),
+                                                          );
+                                                        } catch (error) {
+                                                          print('Error updating document: $error');
+                                                          ScaffoldMessenger.of(context).showSnackBar(
+                                                            SnackBar(content: Text('Cập nhật thất bại: $error')),
+                                                          );
+                                                        }
+
+                                                        Navigator.of(context).pop(); // Đóng Bottom Sheet sau khi cập nhật
+                                                      },
+                                                      child: const Text('Lưu thay đổi'),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                      child: const Text('Chỉnh sửa'),
+                                    ),
+                                  ],
+                                );
+                              },
                             );
+
+
                           }
                         },
+
                         child: Container(
                           decoration: BoxDecoration(
                               color: Colors.white,
