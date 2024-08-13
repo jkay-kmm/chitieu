@@ -6,21 +6,26 @@ import 'package:intl/intl.dart';
 // Tệp này được tạo tự động khi bạn chạy lệnh flutterfire configure
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class MainScreen extends StatelessWidget {
+class MainScreen extends StatefulWidget {
   final List<Expense> expenses;
 
 
   MainScreen(this.expenses, {super.key});
 
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
   double _calculateTotalAmount() {
     double total = 0.0;
-    for (var expense in expenses) {
+    for (var expense in widget.expenses) {
       total += expense.amount;
     }
     return total;
   }
 
-  final TextEditingController amountController = TextEditingController();
+  TextEditingController amountController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -224,9 +229,7 @@ class MainScreen extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                onTap: () {
-
-                },
+                onTap: () {},
                 child: Text(
                   'View All',
                   style: TextStyle(
@@ -241,12 +244,12 @@ class MainScreen extends StatelessWidget {
           const SizedBox(height: 20),
           Expanded(
             child: ListView.builder(
-                itemCount: expenses.length,
+                itemCount: widget.expenses.length,
                 itemBuilder: (context, int i) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
                     child: Dismissible(
-                      key: Key(expenses[i].toString()),
+                      key: Key(widget.expenses[i].toString()),
                       background: Container(
                         color: Colors.red,
                         alignment: Alignment.centerLeft,
@@ -259,19 +262,19 @@ class MainScreen extends StatelessWidget {
                         padding: const EdgeInsets.only(right: 20.0),
                         child: const Icon(Icons.edit, color: Colors.white),
                       ),
-                      onDismissed: (direction) {
+                      confirmDismiss: (direction) async {
                         if (direction == DismissDirection.startToEnd) {
                           // Hiển thị dialog khi vuốt sang phải
-                          showDialog(
+                          return await showDialog(
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
                                 title: const Text('Xóa mục'),
-                                content: Text('Bạn có chắc muốn xóa ${expenses[i].category.name}?'),
+                                content: Text('Bạn có chắc muốn xóa ${widget.expenses[i].category.name}?'),
                                 actions: [
                                   TextButton(
                                     onPressed: () {
-                                      Navigator.of(context).pop(); // Đóng dialog khi nhấn "Hủy"
+                                      Navigator.of(context).pop(false); // Đóng dialog khi nhấn "Hủy"
                                     },
                                     child: const Text('Hủy'),
                                   ),
@@ -280,12 +283,12 @@ class MainScreen extends StatelessWidget {
                                       // Thực hiện hành động xóa từ Firebase
                                       await FirebaseFirestore.instance
                                           .collection('expenses')
-                                          .doc(expenses[i].expenseId) // Giả sử mỗi expense có một ID duy nhất
+                                          .doc(widget.expenses[i].expenseId) // Giả sử mỗi expense có một ID duy nhất
                                           .delete()
                                           .then((_) {
                                         // Hiển thị thông báo thành công
                                         ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text('${expenses[i].category.name} đã bị xóa')),
+                                          SnackBar(content: Text('${widget.expenses[i].category.name} đã bị xóa')),
                                         );
                                       }).catchError((error) {
                                         // Hiển thị thông báo lỗi
@@ -294,7 +297,7 @@ class MainScreen extends StatelessWidget {
                                         );
                                       });
 
-                                      Navigator.of(context).pop(); // Đóng dialog sau khi thực hiện xóa
+                                      Navigator.of(context).pop(true); // Đóng dialog sau khi thực hiện xóa
                                     },
                                     child: const Text('Xóa'),
                                   ),
@@ -304,23 +307,22 @@ class MainScreen extends StatelessWidget {
                           );
 
                         } else {
-                          showDialog(
+                          return await  showDialog(
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
                                 title: const Text('Chỉnh sửa mục'),
-                                content: Text('Bạn muốn chỉnh sửa ${expenses[i].category.name}?'),
+                                content: Text('Bạn muốn chỉnh sửa ${widget.expenses[i].category.name}?'),
                                 actions: [
                                   TextButton(
                                     onPressed: () {
-                                      // Navigator.of(context).pop(); // Đóng dialog khi nhấn "Hủy"
+                                      Navigator.of(context).pop(false ); // Đóng dialog khi nhấn "Hủy"
                                     },
                                     child: const Text('Hủy'),
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      Navigator.of(context).pop(); // Đóng dialog sau khi nhấn "Chỉnh sửa"
-
+                                      print('okk');
                                       // Mở Bottom Sheet để chỉnh sửa
                                       showModalBottomSheet(
                                         context: context,
@@ -337,7 +339,7 @@ class MainScreen extends StatelessWidget {
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    'Chỉnh sửa ${expenses[i].category.name}',
+                                                    'Chỉnh sửa ${widget.expenses[i].category.name}',
                                                     style: const TextStyle(
                                                       fontSize: 18,
                                                       fontWeight: FontWeight.bold,
@@ -345,7 +347,7 @@ class MainScreen extends StatelessWidget {
                                                   ),
                                                   const SizedBox(height: 16),
                                                   TextField(
-                                                    controller: TextEditingController(text: expenses[i].amount.toString()),
+                                                    controller: TextEditingController(text: widget.expenses[i].amount.toString()),
                                                     decoration: const InputDecoration(
                                                       labelText: 'Số tiền',
                                                       border: OutlineInputBorder(),
@@ -353,9 +355,9 @@ class MainScreen extends StatelessWidget {
                                                     keyboardType: TextInputType.number,
                                                     onChanged: (value) {
                                                       // Cập nhật số tiền khi người dùng nhập
+                                                      amountController.text = value;
                                                       // Có thể lưu giá trị vào biến để sử dụng khi lưu thay đổi
                                                     },
-
                                                   ),
 
                                                   const SizedBox(height: 16),
@@ -365,14 +367,14 @@ class MainScreen extends StatelessWidget {
                                                       try {
                                                         await FirebaseFirestore.instance
                                                             .collection('expenses')
-                                                            .doc(expenses[i].expenseId)
+                                                            .doc(widget.expenses[i].expenseId)
                                                             .update({
                                                           'amount': int.parse(amountController.text), // Sử dụng giá trị mới
                                                           // Thêm các trường khác nếu cần
                                                         });
 
                                                         ScaffoldMessenger.of(context).showSnackBar(
-                                                          SnackBar(content: Text('${expenses[i].category.name} đã được cập nhật')),
+                                                          SnackBar(content: Text('${widget.expenses[i].category.name} đã được cập nhật')),
                                                         );
                                                       } catch (error) {
                                                         print('Error updating document: $error');
@@ -381,7 +383,7 @@ class MainScreen extends StatelessWidget {
                                                         );
                                                       }
 
-                                                      Navigator.of(context).pop(); // Đóng Bottom Sheet sau khi cập nhật
+                                                      Navigator.of(context).pop(false); // Đóng Bottom Sheet sau khi cập nhật
                                                     },
                                                     child: const Text('Lưu thay đổi'),
                                                   ),
@@ -391,6 +393,7 @@ class MainScreen extends StatelessWidget {
                                           );
                                         },
                                       );
+                                      Navigator.of(context).pop(false); // Đóng dialog sau khi nhấn "Chỉnh sửa"
                                     },
                                     child: const Text('Chỉnh sửa'),
                                   ),
@@ -398,11 +401,14 @@ class MainScreen extends StatelessWidget {
                               );
                             },
                           );
-
-
                         }
                       },
-
+                      onDismissed: (direction) {
+                        // This part is reached only if confirmDismiss returns true
+                        setState(() {
+                          widget.expenses.removeAt(i);
+                        });
+                      },
                       child: Container(
                         decoration: BoxDecoration(
                             color: Colors.white,
@@ -422,12 +428,12 @@ class MainScreen extends StatelessWidget {
                                         width: 50,
                                         height: 50,
                                         decoration: BoxDecoration(
-                                            color: Color(expenses[i].category.color),
+                                            color: Color(widget.expenses[i].category.color),
                                             shape: BoxShape.circle
                                         ),
                                       ),
                                       Image.asset(
-                                        'assets/${expenses[i].category.icon}.png',
+                                        'assets/${widget.expenses[i].category.icon}.png',
                                         scale: 2,
                                         color: Colors.white,
                                       )
@@ -435,7 +441,7 @@ class MainScreen extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 12),
                                   Text(
-                                    expenses[i].category.name,
+                                    widget.expenses[i].category.name,
                                     style: TextStyle(
                                         fontSize: 14,
                                         color: Theme.of(context).colorScheme.onBackground,
@@ -448,7 +454,7 @@ class MainScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   Text(
-                                    "\$${expenses[i].amount}.00",
+                                    "\$${widget.expenses[i].amount}.00",
                                     style: const TextStyle(
                                         fontSize: 14,
                                         color: Colors.black,
@@ -456,7 +462,7 @@ class MainScreen extends StatelessWidget {
                                     ),
                                   ),
                                   Text(
-                                    DateFormat('dd/MM/yyyy').format(expenses[i].date),
+                                    DateFormat('dd/MM/yyyy').format(widget.expenses[i].date),
                                     style: TextStyle(
                                         fontSize: 14,
                                         color: Theme.of(context).colorScheme.outline,
