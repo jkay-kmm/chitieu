@@ -20,7 +20,6 @@ Future getCategoryCreation(BuildContext context) {
       TextEditingController categoryColorController = TextEditingController();
       bool isLoading = false;
       Category category = Category.empty;
-
       return BlocProvider.value(
         value: context.read<CreateCategoryBloc>(),
         child: StatefulBuilder(

@@ -53,8 +53,7 @@ class _AddExpenseState extends State<AddExpense> {
           body: BlocBuilder<GetCategoriesBloc, GetCategoriesState>(
             builder: (context, state) {
               if (state is GetCategoriesSuccess) {
-                return Padding(
-                  padding: const EdgeInsets.all(16.0),
+                return SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -166,7 +165,7 @@ class _AddExpenseState extends State<AddExpense> {
                         readOnly: true,
                         onTap: () async {
                           DateTime? newDate = await showDatePicker(context: context, initialDate: expense.date, firstDate: DateTime.now(), lastDate: DateTime.now().add(const Duration(days: 365)));
-
+                  
                           if (newDate != null) {
                             setState(() {
                               dateController.text = DateFormat('dd/MM/yyyy').format(newDate);
@@ -200,8 +199,9 @@ class _AddExpenseState extends State<AddExpense> {
                                 setState(() {
                                   expense.amount = int.parse(expenseController.text);
                                 });
-
+                  
                                 context.read<CreateExpenseBloc>().add(CreateExpense(expense));
+                                Navigator.pop(context, expense);
                               },
                               style: TextButton.styleFrom(backgroundColor: Colors.black, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                               child: const Text(

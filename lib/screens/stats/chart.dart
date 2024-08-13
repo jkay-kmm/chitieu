@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class MyChart extends StatefulWidget {
   const MyChart({super.key});
 
+
   @override
   State<MyChart> createState() => _MyChartState();
 }
@@ -31,7 +32,6 @@ class _MyChartState extends State<MyChart> {
                   setState(() {});
                   return;
                 }
-
                 final touchedIndex =
                     pieTouchResponse.touchedSection!.touchedSectionIndex;
 
@@ -61,7 +61,7 @@ class _MyChartState extends State<MyChart> {
         case 2:
           return makePieSectionData(2, 20, '03', Colors.lightGreen);
         case 3:
-          return makePieSectionData(3, 45, '04', Colors.yellow);
+          return makePieSectionData(3, 100, '04', Colors.yellow);
         case 4:
           return makePieSectionData(4, 38, '05', Colors.orange);
         case 5:
@@ -78,16 +78,16 @@ class _MyChartState extends State<MyChart> {
 
   PieChartSectionData makePieSectionData(
       int index, double value, String title, Color color) {
-    final isTouched = false;
-    final double fontSize = isTouched ? 25 : 16;
-    final double radius = isTouched ? 60 : 50;
+    const isTouched = false;
+    const double fontSize = isTouched ? 25 : 16;
+    const double radius = isTouched ? 60 : 50;
 
     return PieChartSectionData(
       color: color,
       value: value,
       title: '$title%',
       radius: radius,
-      titleStyle: TextStyle(
+      titleStyle:const  TextStyle(
         fontSize: fontSize,
         fontWeight: FontWeight.bold,
         color: Colors.white,
