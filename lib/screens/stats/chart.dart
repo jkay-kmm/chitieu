@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -12,153 +11,87 @@ class MyChart extends StatefulWidget {
 class _MyChartState extends State<MyChart> {
   @override
   Widget build(BuildContext context) {
-    return BarChart(
-      mainBarData(),
-    );
-  }
+    return Scaffold(
+      // backgroundColor: Colors.blueGrey,
+      appBar: AppBar(
+        backgroundColor: Colors.blueGrey,
+        title: const Text('Flutter Pie Chart Example',),
+      ),
+      body: Center(
+        child: PieChart(
+          PieChartData(
+            sections: showingSections(),
+            sectionsSpace: 2,
+            centerSpaceRadius: 40,
+            pieTouchData: PieTouchData(
+              touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                if (!event.isInterestedForInteractions ||
+                    pieTouchResponse == null ||
+                    pieTouchResponse.touchedSection == null) {
+                  setState(() {});
+                  return;
+                }
 
-  BarChartGroupData makeGroupData(int x, double y) {
-    return BarChartGroupData(
-      x: x,
-      barRods: [
-        BarChartRodData(
-          toY: y,
-          color:const  Color(0xFF33CCFF),
-          width: 10,
-          backDrawRodData: BackgroundBarChartRodData(
-            show: true,
-            toY: 5,
-            color: Colors.grey.shade300
-          )
-        )
-      ]
-    );
-  }
+                final touchedIndex =
+                    pieTouchResponse.touchedSection!.touchedSectionIndex;
 
-  List<BarChartGroupData> showingGroups() => List.generate(8, (i) {
-    switch (i) {
-      case 0:
-        return makeGroupData(0, 2);
-      case 1:
-        return makeGroupData(1, 3);
-      case 2:
-        return makeGroupData(2, 2);
-      case 3:
-        return makeGroupData(3, 4.5);
-      case 4:
-        return makeGroupData(4, 3.8);
-      case 5:
-        return makeGroupData(5, 1.5);
-      case 6:
-        return makeGroupData(6, 4);
-      case 7:
-        return makeGroupData(7, 3.8);
-      default:
-        return throw Error();
-    }
-  });
-
-  BarChartData mainBarData() {
-    return BarChartData(
-      titlesData: FlTitlesData(
-        show: true,
-        rightTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false)
-        ),
-        topTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false)
-        ),
-        bottomTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            reservedSize: 38,
-            getTitlesWidget: getTiles,
-          )
-        ),
-        leftTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            reservedSize: 38,
-            getTitlesWidget: leftTitles,
+                setState(() {
+                  // Here you can change the state to highlight the touched section
+                });
+              },
+            ),
+            borderData: FlBorderData(
+              show: false,
+            ),
+            startDegreeOffset: 0,
           ),
         ),
+
       ),
-      borderData: FlBorderData(
-        show: false
-      ),
-      gridData: const FlGridData(show: false),
-      barGroups: showingGroups(),
     );
   }
 
-  Widget getTiles(double value, TitleMeta meta) {
-    const style = TextStyle(
-      color: Colors.grey,
-      fontWeight: FontWeight.bold,
-      fontSize: 14,
-    );
-    Widget text;
-
-    switch (value.toInt()) {
-      case 0:
-        text = const Text('01', style: style);
-        break;
-      case 1:
-        text = const Text('02', style: style);
-        break;
-      case 2:
-        text = const Text('03', style: style);
-        break;
-      case 3:
-        text = const Text('04', style: style);
-        break;
-      case 4:
-        text = const Text('05', style: style);
-        break;
-      case 5:
-        text = const Text('06', style: style);
-        break;
-      case 6:
-        text = const Text('07', style: style);
-        break;
-      case 7:
-        text = const Text('08', style: style);
-        break;
-      default:
-        text = const Text('', style: style);
-        break;
-    }
-    return SideTitleWidget(
-      axisSide: meta.axisSide,
-      space: 16,
-      child: text,
-    );
+  List<PieChartSectionData> showingSections() {
+    return List.generate(8, (i) {
+      switch (i) {
+        case 0:
+          return makePieSectionData(0, 20, '01', Colors.blueGrey);
+        case 1:
+          return makePieSectionData(1, 30, '02', Colors.redAccent);
+        case 2:
+          return makePieSectionData(2, 20, '03', Colors.lightGreen);
+        case 3:
+          return makePieSectionData(3, 45, '04', Colors.yellow);
+        case 4:
+          return makePieSectionData(4, 38, '05', Colors.orange);
+        case 5:
+          return makePieSectionData(5, 15, '06', Colors.purple);
+        case 6:
+          return makePieSectionData(6, 40, '07', Colors.pink);
+        case 7:
+          return makePieSectionData(7, 38, '08', Colors.teal);
+        default:
+          return throw Error();
+      }
+    });
   }
 
-   Widget leftTitles(double value, TitleMeta meta) {
-    const style = TextStyle(
-      color: Colors.grey,
-      fontWeight: FontWeight.bold,
-      fontSize: 14,
-    );
-    String text;
-    if (value == 0) {
-      text = '1K';
-    } else if (value == 2) {
-      text = '2K';
-    } else if (value == 3) {
-      text = '3K';
-    } else if (value == 4) {
-      text = '4K';
-    } else if (value == 5) {
-      text = '5K';
-    } else {
-      return Container();
-    }
-    return SideTitleWidget(
-      axisSide: meta.axisSide,
-      space: 0,
-      child: Text(text, style: style),
+  PieChartSectionData makePieSectionData(
+      int index, double value, String title, Color color) {
+    final isTouched = false;
+    final double fontSize = isTouched ? 25 : 16;
+    final double radius = isTouched ? 60 : 50;
+
+    return PieChartSectionData(
+      color: color,
+      value: value,
+      title: '$title%',
+      radius: radius,
+      titleStyle: TextStyle(
+        fontSize: fontSize,
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+      ),
     );
   }
 }

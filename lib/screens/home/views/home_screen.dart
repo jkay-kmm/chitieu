@@ -50,7 +50,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     BottomNavigationBarItem(
                       icon: Icon(CupertinoIcons.home,
                           color: index == 0 ? selectedItem : unselectedItem
-                      ), label: 'Home'),
+                      ),
+                        label: 'Home'
+                    ),
+
                     BottomNavigationBarItem(
                         icon: Icon(CupertinoIcons.graph_square_fill,
                             color: index == 1 ? selectedItem : unselectedItem
@@ -99,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             body: index == 0 
               ? MainScreen(state.expenses) 
-              : const StatScreen());
+              : StatScreen());
         } else {
           return const Scaffold(
             body: Center(

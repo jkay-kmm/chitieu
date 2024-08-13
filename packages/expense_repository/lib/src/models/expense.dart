@@ -8,7 +8,6 @@ class Expense {
   int amount;
 
   Expense({
-    // required this.id,
     required this.expenseId,
     required this.category,
     required this.date,
@@ -40,4 +39,5 @@ class Expense {
       amount: entity.amount,
     );
   }
+
 }
