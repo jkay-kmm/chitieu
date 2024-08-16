@@ -4,9 +4,6 @@ import 'package:flutter/material.dart';
 import 'chart.dart';
 
 class StatScreen extends StatelessWidget {
-
-
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -18,7 +15,7 @@ class StatScreen extends StatelessWidget {
           children: [
             const Center(
               child: Text(
-                'Transactions',
+                'Giao dịch',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold
@@ -35,7 +32,7 @@ class StatScreen extends StatelessWidget {
               ),
               child:  const Padding(
                 padding: EdgeInsets.fromLTRB(12, 20, 12, 12),
-                child: MyChart()
+                child: MyChart(expenses: [],)
               )
             )
           ],

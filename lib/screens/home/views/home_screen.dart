@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../add_expense/blocs/create_expense_bloc/create_expense_bloc.dart';
+import '../../stats/chart.dart';
 import '../../stats/stats.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -26,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int index = 0;
   late Color selectedItem = Colors.blue;
   Color unselectedItem = Colors.grey;
+  late final List<Expense> expenses;
 
 
   @override
@@ -57,7 +59,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     BottomNavigationBarItem(
                         icon: Icon(CupertinoIcons.graph_square_fill,
                             color: index == 1 ? selectedItem : unselectedItem
-                        ), label: 'Stats')]),
+                        ), label: 'Stats'
+                    )
+                  ]
+              ),
             ),
 
             floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -83,6 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 );
 
+
                 if(newExpense != null) {
                   setState(() {
                     state.expenses.insert(0, newExpense);
@@ -102,7 +108,9 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             body: index == 0 
               ? MainScreen(state.expenses) 
-              : StatScreen());
+              : StatScreen(
+
+            ));
         } else {
           return const Scaffold(
             body: Center(

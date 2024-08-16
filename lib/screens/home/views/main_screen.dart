@@ -2,8 +2,6 @@ import 'package:expense_repository/expense_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
-// Tệp này được tạo tự động khi bạn chạy lệnh flutterfire configure
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../stats/chart.dart';
@@ -44,12 +42,14 @@ class _MainScreenState extends State<MainScreen> {
     return SafeArea(
       child: buildPadding(context),
     );
+
   }
 
   Padding buildPadding(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10),
       child: Column(
+
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -64,12 +64,12 @@ class _MainScreenState extends State<MainScreen> {
                         height: 50,
                         decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.yellow[700]
+                            color: Colors.yellow[200]
                         ),
                       ),
                       Icon(
                         CupertinoIcons.person_fill,
-                        color: Colors.yellow[800],
+                        color: Colors.yellow[700],
                       )
                     ],
                   ),
@@ -97,7 +97,7 @@ class _MainScreenState extends State<MainScreen> {
                   ),
                 ],
               ),
-              IconButton(onPressed: () {}, icon: const Icon(CupertinoIcons.settings))
+              IconButton(onPressed: () {}, icon: const Icon(CupertinoIcons.calendar_badge_plus ))
             ],
           ),
           const SizedBox(height: 20,),
@@ -119,7 +119,7 @@ class _MainScreenState extends State<MainScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
-                  'Total Balance',
+                  'Tổng số dư ',
                   style: TextStyle(
                       fontSize: 16,
                       color: Colors.white,
@@ -162,7 +162,7 @@ class _MainScreenState extends State<MainScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Income',
+                                'Thu nhập',
                                 style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.white,
@@ -203,7 +203,7 @@ class _MainScreenState extends State<MainScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Expense',
+                                'Chi phí ',
                                 style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.white,
@@ -233,7 +233,7 @@ class _MainScreenState extends State<MainScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                'Transactions',
+                'Giao dịch',
                 style: TextStyle(
                     fontSize: 16,
                     color:Colors.black,
@@ -243,7 +243,7 @@ class _MainScreenState extends State<MainScreen> {
               GestureDetector(
                 onTap: () {},
                 child: Text(
-                  'View All',
+                  'Xem tất',
                   style: TextStyle(
                       fontSize: 14,
                       color: Theme.of(context).colorScheme.outline,
@@ -356,7 +356,7 @@ class _MainScreenState extends State<MainScreen> {
                                                       fontWeight: FontWeight.bold,
                                                     ),
                                                   ),
-                                                  
+
                                                   const SizedBox(height: 16),
                                                   TextField(
                                                     controller: _editAmountController,
@@ -504,5 +504,7 @@ class _MainScreenState extends State<MainScreen> {
         ],
       ),
     );
+
   }
+
 }
